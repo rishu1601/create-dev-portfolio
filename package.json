@@ -1,0 +1,28 @@
+{
+  "name": "create-dev-portfolio",
+  "version": "0.1.0",
+  "description": "Clones dev-portfolio-template, interviews you for the basics, and generates a ready-to-run Next.js portfolio.",
+  "type": "module",
+  "bin": {
+    "create-dev-portfolio": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.10.1",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.15",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}

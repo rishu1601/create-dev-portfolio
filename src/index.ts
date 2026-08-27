@@ -7,6 +7,7 @@ import { writeProfile } from './writeProfile.js'
 import { verifyBuild } from './verifyBuild.js'
 import { run } from './exec.js'
 import { slugify } from './slugify.js'
+import { maybeDeploy } from './deploy.js'
 
 const DEFAULT_TEMPLATE = 'https://github.com/rishu1601/dev-portfolio-template.git'
 
@@ -54,6 +55,8 @@ program
         console.log(`  - ${section}`)
       }
       console.log('Edit them in config/profile.json before you publish this anywhere.\n')
+
+      await maybeDeploy(targetDir, path.basename(targetDir))
 
       console.log('Starting the dev server (npm run dev) — http://localhost:3000, press Ctrl+C to stop...\n')
       run('npm', ['run', 'dev'], targetDir)

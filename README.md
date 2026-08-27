@@ -20,9 +20,13 @@ Part of a 3-repo MVP:
    future `portfolio-agent` pass to generate from a resume.
 4. Runs `npm install` and `npm run build` to verify the site builds.
 5. Makes an initial commit.
-
-GitHub repo creation and Vercel deployment are not automated yet — that's
-a separate pass once this core flow is solid.
+6. Prints a heads-up about which config sections are still placeholder content.
+7. Asks whether to push to GitHub and deploy to Vercel now (opt-in, default no):
+   - Pushing needs the `gh` CLI installed and signed in (`gh auth login`).
+   - Deploying needs the `vercel` CLI installed and signed in (`vercel login`).
+   - Either one missing/unauthenticated just prints the manual command and
+     moves on — it never blocks getting your local portfolio running.
+8. Starts the dev server (`npm run dev`) so you land on the running site.
 
 ## Usage
 

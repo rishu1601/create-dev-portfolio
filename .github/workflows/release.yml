@@ -1,11 +1,15 @@
-name: Auto-bump version
+name: Release (bump + publish)
 
-# Fires when a PR merges into master — not on every push — so this workflow's
-# own version-bump commit can't retrigger itself (no pull_request event is
-# created by a direct push). Bump type comes from the PR title's
-# conventional-commit prefix: "feat:" -> minor, "type!:"/"BREAKING CHANGE" ->
-# major, anything else -> patch. Pushing the bump to master then triggers the
-# existing publish.yml, which watches for package.json changes.
+# Fires when a PR merges into master, or manually. Bump + build + publish
+# all happen in ONE job — deliberately not split across two workflows
+# chained by a push event, because a push made with the default
+# GITHUB_TOKEN does not trigger other push-triggered workflows (GitHub's
+# anti-loop protection). That gap is what silently broke the previous
+# two-workflow (auto-bump.yml -> publish.yml) setup: the bump commit got
+# pushed, but publish.yml never fired.
+#
+# Bump type comes from the PR title's conventional-commit prefix:
+# "feat:" -> minor, "type!:"/"BREAKING CHANGE" -> major, else patch.
 on:
   pull_request:
     types: [closed]
@@ -20,16 +24,24 @@ on:
         options: [patch, minor, major]
 
 jobs:
-  bump:
+  release:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write # required for npm OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
         with:
           ref: master
           fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22' # trusted publishing needs Node >=22.14.0
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm install -g npm@latest # trusted publishing needs npm CLI >=11.5.1
 
       - name: Determine bump type
         id: bump-type
@@ -53,3 +65,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           npm version ${{ steps.bump-type.outputs.type }} -m "chore: bump version to %s"
           git push origin master --follow-tags
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Publish
+        run: npm publish

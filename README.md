@@ -32,7 +32,8 @@ npm run build
 node dist/index.js my-portfolio
 ```
 
-Or once published: `npx create-dev-portfolio my-portfolio`.
+Or once published: `npx create-tech-dev-portfolio my-portfolio` (the npm package
+is `create-tech-dev-portfolio` — `create-dev-portfolio` was already taken).
 
 Options:
 - `--template <url>` — clone a different template repo (default: `dev-portfolio-template`).

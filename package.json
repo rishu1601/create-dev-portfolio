@@ -1,6 +1,6 @@
 {
   "name": "create-tech-dev-portfolio",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Clones dev-portfolio-template, interviews you for the basics, and generates a ready-to-run Next.js portfolio.",
   "type": "module",
   "bin": {

@@ -12,13 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write # required for OIDC trusted publishing
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22' # trusted publishing needs Node >=22.14.0
           registry-url: 'https://registry.npmjs.org'
+
+      - run: npm install -g npm@latest # trusted publishing needs npm CLI >=11.5.1
 
       - run: npm ci
 
@@ -32,8 +35,10 @@ jobs:
           echo "local=$LOCAL_VERSION" >> "$GITHUB_OUTPUT"
           echo "published=$PUBLISHED_VERSION" >> "$GITHUB_OUTPUT"
 
+      # No NODE_AUTH_TOKEN/NPM_TOKEN — trusted publishing authenticates via
+      # this workflow's OIDC identity, configured on npmjs.com's package
+      # settings (Trusted Publisher: rishu1601/create-dev-portfolio, this
+      # workflow filename). No long-lived npm token to store or leak.
       - name: Publish
         if: steps.version-check.outputs.local != steps.version-check.outputs.published
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
